@@ -1,0 +1,636 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Projeto API",
+      "description": "Documentação da API do projeto"
+    },
+    "basePath": "/projects",
+    "paths": {
+      "/cadastrar/cliente": {
+        "post": {
+          "summary": "Cadastra um novo cliente",
+          "description": "Cria um novo cliente com as informações fornecidas, incluindo um endereço associado.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do cliente"
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "description": "Número de telefone do cliente"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Endereço de e-mail do cliente"
+                  },
+                  "cpf_cnpj": {
+                    "type": "string",
+                    "description": "CPF ou CNPJ do cliente"
+                  },
+                  "endereco": {
+                    "type": "object",
+                    "properties": {
+                      "rua": {
+                        "type": "string",
+                        "description": "Rua do endereço"
+                      },
+                      "numero": {
+                        "type": "string",
+                        "description": "Número do endereço"
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "description": "Cidade do endereço"
+                      },
+                      "estado": {
+                        "type": "string",
+                        "description": "Estado do endereço"
+                      },
+                      "cep": {
+                        "type": "string",
+                        "description": "CEP do endereço"
+                      }
+                    },
+                    "required": [
+                      "rua",
+                      "numero",
+                      "cidade",
+                      "estado",
+                      "cep"
+                    ]
+                  }
+                },
+                "required": [
+                  "nome",
+                  "telefone",
+                  "email",
+                  "cpf_cnpj",
+                  "endereco"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Cliente cadastrado com sucesso",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Mensagem de sucesso"
+                  },
+                  "clienteId": {
+                    "type": "integer",
+                    "description": "ID do cliente criado"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do cliente"
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "description": "Número de telefone do cliente"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Endereço de e-mail do cliente"
+                  },
+                  "cpf_cnpj": {
+                    "type": "string",
+                    "description": "CPF ou CNPJ do cliente"
+                  },
+                  "enderecoId": {
+                    "type": "integer",
+                    "description": "ID do endereço associado ao cliente"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao cadastrar cliente"
+            }
+          }
+        }
+      },
+      "/cadastrar/fornecedor": {
+        "post": {
+          "description": "Cadastrar o fornecedor",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do fornecedor"
+                  },
+                  "telefone": {
+                    "type": "string",
+                    "description": "Número de telefone do fornecedor"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Endereço de e-mail do fornecedor"
+                  },
+                  "cpf_cnpj": {
+                    "type": "string",
+                    "description": "CPF ou CNPJ do fornecedor"
+                  },
+                  "endereco": {
+                    "type": "object",
+                    "properties": {
+                      "rua": {
+                        "type": "string",
+                        "description": "Rua do endereço"
+                      },
+                      "numero": {
+                        "type": "string",
+                        "description": "Número do endereço"
+                      },
+                      "cidade": {
+                        "type": "string",
+                        "description": "Cidade do endereço"
+                      },
+                      "estado": {
+                        "type": "string",
+                        "description": "Estado do endereço"
+                      },
+                      "cep": {
+                        "type": "string",
+                        "description": "CEP do endereço"
+                      }
+                    },
+                    "required": [
+                      "rua",
+                      "numero",
+                      "cidade",
+                      "estado",
+                      "cep"
+                    ]
+                  }
+                },
+                "required": [
+                  "nome",
+                  "telefone",
+                  "email",
+                  "cpf_cnpj",
+                  "endereco"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Sucesso"
+            }
+          }
+        }
+      },
+      "/cadastrar/produto": {
+        "post": {
+          "summary": "Cadastra um novo produto",
+          "description": "Cria um novo produto com as informações fornecidas.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do produto"
+                  },
+                  "preco": {
+                    "type": "number",
+                    "description": "Preço do produto"
+                  },
+                  "fornecedor_id": {
+                    "type": "integer",
+                    "description": "ID do fornecedor do produto"
+                  },
+                  "quantidade": {
+                    "type": "integer",
+                    "description": "Quantidade disponível do produto"
+                  },
+                  "marca": {
+                    "type": "string",
+                    "description": "Marca do produto"
+                  }
+                },
+                "required": [
+                  "nome",
+                  "preco",
+                  "fornecedor_id",
+                  "quantidade",
+                  "marca"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Produto cadastrado com sucesso",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Mensagem de sucesso"
+                  },
+                  "produto_id": {
+                    "type": "integer",
+                    "description": "ID do produto criado"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "description": "Nome do produto"
+                  },
+                  "preco": {
+                    "type": "number",
+                    "description": "Preço do produto"
+                  },
+                  "quantidade": {
+                    "type": "integer",
+                    "description": "Quantidade disponível do produto"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao cadastrar produto"
+            }
+          }
+        }
+      },
+      "/cadastrar/pedido": {
+        "post": {
+          "summary": "Cadastra um novo pedido",
+          "description": "Cria um novo pedido com os itens fornecidos e calcula o valor total.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "cliente_id": {
+                    "type": "integer",
+                    "description": "ID do cliente associado ao pedido"
+                  },
+                  "itens": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "produto_id": {
+                          "type": "integer",
+                          "description": "ID do produto a ser adicionado ao pedido"
+                        },
+                        "quantidade": {
+                          "type": "integer",
+                          "description": "Quantidade do produto a ser adicionada ao pedido"
+                        }
+                      },
+                      "required": [
+                        "produto_id",
+                        "quantidade"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "cliente_id",
+                  "itens"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pedido inserido com sucesso",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "Mensagem de sucesso"
+                  },
+                  "pedidoid": {
+                    "type": "integer",
+                    "description": "ID do pedido criado"
+                  },
+                  "dataCriacao": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Data de criação do pedido"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Erro ao cadastrar pedido ou cliente inválido"
+            }
+          }
+        }
+      },
+      "/adicionar-item": {
+        "post": {
+          "summary": "Adiciona um item a um pedido",
+          "description": "Adiciona um ou mais itens a um pedido existente e atualiza o valor total do pedido.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_pedido": {
+                    "type": "integer",
+                    "description": "ID do pedido ao qual o item será adicionado"
+                  },
+                  "itens": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "produto_id": {
+                          "type": "integer",
+                          "description": "ID do produto a ser adicionado"
+                        },
+                        "quantidade": {
+                          "type": "integer",
+                          "description": "Quantidade do produto a ser adicionada"
+                        }
+                      },
+                      "required": [
+                        "produto_id",
+                        "quantidade"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "id_pedido",
+                  "itens"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Item adicionado com sucesso ao pedido"
+            },
+            "500": {
+              "description": "Erro ao adicionar o item ou pedido inválido"
+            }
+          }
+        }
+      },
+      "/fechar-pedido": {
+        "put": {
+          "summary": "Fecha um pedido",
+          "description": "Atualiza o status de um pedido para fechado.",
+          "consumes": [
+            "application/json"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_pedido": {
+                    "type": "integer",
+                    "description": "ID do pedido a ser fechado"
+                  }
+                },
+                "required": [
+                  "id_pedido"
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pedido fechado com sucesso"
+            },
+            "500": {
+              "description": "Erro ao fechar o pedido ou pedido inválido"
+            }
+          }
+        }
+      },
+      "/listar-produto": {
+        "get": {
+          "summary": "Lista todos os produtos",
+          "description": "Retorna uma lista de todos os produtos disponíveis.",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "Lista de produtos",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "ID do produto"
+                    },
+                    "nome": {
+                      "type": "string",
+                      "description": "Nome do produto"
+                    },
+                    "preco": {
+                      "type": "number",
+                      "description": "Preço do produto"
+                    },
+                    "quantidade": {
+                      "type": "integer",
+                      "description": "Quantidade disponível do produto"
+                    },
+                    "fornecedor_id": {
+                      "type": "integer",
+                      "description": "ID do fornecedor do produto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/relatorio-cozinha": {
+        "get": {
+          "summary": "Gera um relatório de cozinha",
+          "description": "Retorna um relatório com informações sobre os pedidos, produtos e clientes.",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "Dados do relatório de cozinha",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id_pedido": {
+                      "type": "integer",
+                      "description": "ID do pedido"
+                    },
+                    "produto": {
+                      "type": "string",
+                      "description": "Nome do produto"
+                    },
+                    "quantidade_consumida": {
+                      "type": "integer",
+                      "description": "Quantidade consumida do produto"
+                    },
+                    "valor_total_produto": {
+                      "type": "number",
+                      "description": "Valor total do produto"
+                    },
+                    "cliente": {
+                      "type": "string",
+                      "description": "Nome do cliente"
+                    },
+                    "preco_unitario": {
+                      "type": "number",
+                      "description": "Preço unitário do produto"
+                    },
+                    "valor_total_item": {
+                      "type": "number",
+                      "description": "Valor total do item"
+                    },
+                    "data_pedido": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Data do pedido"
+                    },
+                    "valor_total_pedido": {
+                      "type": "number",
+                      "description": "Valor total do pedido"
+                    },
+                    "fornecedor": {
+                      "type": "string",
+                      "description": "Nome do fornecedor"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/excluir-produto-pedido": {
+        "delete": {
+          "description": "Excluir produto do pedido",
+          "parameters": [
+            {
+              "in": "query",
+              "name": "idPedido",
+              "description": "ID do pedido",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "in": "query",
+              "name": "idProduto",
+              "description": "ID do produto",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Sucesso"
+            }
+          }
+        }
+      },
+      "/excluir-pedido/{id}": {
+        "delete": {
+          "summary": "Exclui um pedido",
+          "description": "Exclui um pedido com base no ID fornecido.",
+          "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "description": "ID do pedido a ser excluído",
+              "required": true,
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pedido excluído com sucesso"
+            },
+            "500": {
+              "description": "Erro ao excluir o pedido ou pedido inválido"
+            }
+          }
+        }
+      }
+    }
+  }
+  
