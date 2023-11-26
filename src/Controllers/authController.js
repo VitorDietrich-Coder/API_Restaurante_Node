@@ -9,7 +9,7 @@ const router = express.Router();
 
 function generateTotken(params = {}) {
   return jwt.sign(params, process.env.SECRET, {
-    expiresIn: 1400,
+    expiresIn: 5000,
   });
 }
 

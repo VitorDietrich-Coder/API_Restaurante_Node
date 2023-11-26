@@ -44,7 +44,7 @@ router.post('/cadastrar/cliente', function (req, res) {
 router.post('/cadastrar/fornecedor', function (req, res) {
   const { nome, telefone, email, cpf_cnpj, endereco } = req.body;
 
-  conn.query('SELECT * FROM  fornecedores WHERE cpf_cnpj = ?', [cpf_cnpj], function (error, results) {
+  conn.query('SELECT * FROM fornecedores WHERE cpf_cnpj = ?', [cpf_cnpj], function (error, results) {
       if (results.length > 0)
       {
         res.status(500).json({message: 'Fornecedor já está cadastrado!'});
@@ -122,7 +122,7 @@ router.post('/cadastrar/pedido', function (req, res) {//inserindo valores
         }
         produtosExistentes.forEach(produto => {
       conn.query('Insert into itenspedido (pedido_id, produto_id, quantidade) values(?, ?, ?)', 
-        [pedidoid, produto.id, produto.quantidade], 
+        [pedidoid, produto.produto_id, produto.quantidade], 
         function (error, itensPedidoResult) 
         {
           if (error) 
@@ -153,7 +153,7 @@ router.post('/adicionar-item', function (req, res) {//alterando valores
       const valorTotal = await GeraValorTotal(Array.from(itens), valor);
       produtosExistentes.forEach(produto => {
       conn.query('Insert into itensPedido (pedido_id, produto_id, quantidade) values(?, ?, ?)',
-      [id_pedido, produto.id, produto.quantidade], 
+      [id_pedido, produto.produto_id, produto.quantidade], 
       function (error, results) {
         if (error){
           return res.status(400).json({message: 'Item inserido com sucesso no pedido!'})
@@ -163,7 +163,7 @@ router.post('/adicionar-item', function (req, res) {//alterando valores
           });
           res.status(200).json({message: 'Item adicionado com sucesso!'})
       });
-    });
+     });
    });
   });
 })
@@ -206,24 +206,42 @@ router.get('/listar-produtos', function (req, res) {
 })
 
 router.get('/listar-pedidos', function (req, res) {
-  conn.query('SELECT * FROM pedidos', 
+  conn.query('SELECT * FROM pedidos where fechado <> 1', 
        function (err, results, fields  ) { 
            res.status(200).json(results)
   })  
 })
 
 router.get('/listar-clientes', function (req, res) {
-  conn.query('SELECT * FROM clientes', 
-       function (err, results, fields  ) { 
-           res.status(200).json(results)
-  })  
-})
+  const query = `
+  SELECT enderecos.*, clientes.*
+  FROM clientes
+  JOIN enderecos ON clientes.endereco_id = enderecos.id
+`;
+
+conn.query(query, function (err, results, fields) {
+  if (err) {
+    return res.status(500).json({ error: err.message });
+  }
+
+  res.status(200).json(results);
+});
+});
 
 router.get('/listar-fornecedores', function (req, res) {
-  conn.query('SELECT * FROM fornecedores', 
-       function (err, results, fields  ) { 
-           res.status(200).json(results)
-  })  
+  const query = `
+  SELECT enderecos.*, fornecedores.*
+  FROM fornecedores
+  JOIN enderecos ON fornecedores.endereco_id = enderecos.id
+`;
+
+conn.query(query, function (err, results, fields) {
+  if (err) {
+    return res.status(500).json({ error: err.message });
+  }
+
+  res.status(200).json(results);
+});
 })
 
 router.get('/listar-funcionarios', function (req, res) {
@@ -249,15 +267,44 @@ router.get('/listar-produto/:id', function (req, res) {
 router.get('/listar-pedido/:id', function (req, res) {
   const pedidoId = req.params.id;
 
-  conn.query(`SELECT * FROM pedidos WHERE id = ${pedidoId}`, 
+  conn.query(
+    `
+    SELECT 
+    p.id as numero_pedido,
+    p.cliente_id,
+    c.nome as nomeCliente,
+    JSON_ARRAYAGG(
+      JSON_OBJECT(
+        'produto_id', i.produto_id,
+        'nomeProduto', pr.nome,
+        'quantidade', i.quantidade
+      )
+    ) as itens
+  FROM 
+    pedidos p
+  JOIN 
+    clientes c ON p.cliente_id = c.id
+  LEFT JOIN 
+    itenspedido i ON p.id = i.pedido_id
+  LEFT JOIN 
+    produtos pr ON i.produto_id = pr.id
+  WHERE 
+    p.id = ? AND p.fechado <> 1
+  GROUP BY
+    p.id, p.cliente_id;
+  
+    `,
+    [pedidoId, pedidoId],
     function (err, results, fields) { 
       if (err) {
         res.status(500).json({ error: err.message });
         return;
       }
       res.status(200).json(results);
-    });
-})
+    }
+  );
+});
+
 
 router.get('/listar-cliente/:id', function (req, res) {
   const clienteId = req.params.id;
@@ -377,6 +424,65 @@ router.delete('/excluir-pedido/:id', async function (req, res) {
 })
 
 
+
+router.put('/alterar-produto', async function (req, res) {
+  const { id_produto, nome, preco, fornecedor_id, quantidade, marca } = req.body;
+  conn.query('SELECT * FROM  fornecedores WHERE id = ?', [fornecedor_id], function (error, results) {
+        if (results.length == 0)
+        {
+          return res.status(500).json({message: 'fornecedor inválido, verifique!'});
+        }
+        conn.query('SELECT * FROM  produtos WHERE id = ?', [id_produto], function (error, results) {
+          if (results.length == 0)
+          {
+            return res.status(500).json({message: 'Produto selecionado é inválido, verifique!'});
+          }
+      conn.query('UPDATE produtos set nome = ?, preco = ?,  fornecedor_id = ?, quantidade = ? , marca = ? where id = ?', [nome, preco, fornecedor_id, quantidade, marca, id_produto], function (error, results2) {
+        if (error) throw error;
+        });
+        res.status(200).json({message: 'Produto alterado com sucesso!'})  
+    });
+    });
+})
+
+router.put('/alterar-cliente', async function (req, res) {
+  const { id_cliente, nome, email, telefone, endereco } = req.body;
+  conn.query('SELECT * FROM  clientes WHERE id = ?', [id_cliente], function (error, resultsCliente) {
+        if (resultsCliente.length == 0)
+        {
+          return res.status(500).json({message: 'Cliente inválido, verifique!'});
+        }
+        conn.query('UPDATE Enderecos set rua = ?, numero = ?,  cidade = ?, estado = ? , cep = ? where id = ?', [endereco.rua, endereco.numero, endereco.cidade, endereco.estado, endereco.cep, resultsCliente.enderecoId], function (error, results2) {
+          if (error) throw error;
+          });
+      conn.query('UPDATE clientes set nome = ?, email = ?, telefone = ? where id = ?', [nome, email, telefone, id_cliente], function (error, results2) {
+        if (error) throw error;
+        });
+        res.status(200).json({message: 'Cliente alterado com sucesso!'})  
+    });
+})
+
+router.put('/alterar-fornecedor', async function (req, res) {
+  const { id_fornecedor, nome, email, telefone, endereco } = req.body;
+  conn.query('SELECT * FROM  fornecedores WHERE id = ?', [id_fornecedor], function (error, resultsCliente) {
+        if (resultsCliente.length == 0)
+        {
+          return res.status(500).json({message: 'Cliente inválido, verifique!'});
+        }
+        conn.query('UPDATE Enderecos set rua = ?, numero = ?,  cidade = ?, estado = ? , cep = ? where id = ?', [endereco.rua, endereco.numero, endereco.cidade, endereco.estado, endereco.cep, resultsCliente.enderecoId], function (error, results2) {
+          if (error) throw error;
+          });
+      conn.query('UPDATE fornecedores set nome = ?, email = ?, telefone = ? where id = ?', [nome, email, telefone, id_fornecedor], function (error, results2) {
+        if (error) throw error;
+        });
+        res.status(200).json({message: 'Fornecedor alterado com sucesso!'})  
+    });
+})
+
+
+
+
+
 function ValidaObjeto(id, tabela) {
   return new Promise((resolve, reject) => {
     conn.query(`SELECT * FROM ${tabela} Where id = ${id}`, function (err, results, fields) 
@@ -391,27 +497,30 @@ function ValidaObjetoItemPedido(idProduto, idPedido, tabela) {
   return new Promise((resolve, reject) => {
     conn.query(`SELECT * FROM ${tabela} Where produto_id = ${idProduto} and pedido_id = ${idPedido}`, function (err, results, fields) 
     {
-      if (err) reject(err);
-      resolve(results[0]);  
+      if (err) {
+        console.error("Erro na consulta SQL:", err);
+        reject(err);
+      } else {
+        console.log("Resultados da consulta:", results);
+        resolve(results[0]);  
+      }
     });
   });
 }
+
 function ValidaProduto(itens) {
   return new Promise((resolve, reject) => {
     const produtosExistentes = [];
     const produtosNaoExistentes = [];
-
     itens.forEach(item => {
       const id = item.produto_id;
       conn.query(`SELECT * FROM produtos WHERE id = ${id}`, function (err, results, fields) {
         if (err) reject(err);
         if (results.length > 0) {
-          produtosExistentes.push(results[0]);
+          produtosExistentes.push(item);
         } else {
-          produtosNaoExistentes.push(id);
+          produtosNaoExistentes.push(item);
         }
-
-        // Verifica se este é o último item do loop
         if (itens.indexOf(item) === itens.length - 1) {
           resolve({ produtosExistentes });
         }
